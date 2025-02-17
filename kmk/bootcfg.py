@@ -9,7 +9,7 @@ import usb_hid
 
 
 def bootcfg(
-    sense: [microcontroller.Pin, digitalio.DigitalInOut],
+    sense: Optional[microcontroller.Pin, digitalio.DigitalInOut] = None,
     source: Optional[microcontroller.Pin, digitalio.DigitalInOut] = None,
     autoreload: bool = True,
     boot_device: int = 0,
@@ -85,10 +85,9 @@ def bootcfg(
         import usb_cdc
 
         usb_cdc.enable(data=True)
-
     # sense pulled low -> Skip boot configuration that may disable debug or
     # rescue facilities.
-    if not sense.value:
+    if sense is None or not sense.value:
         return False
 
     # Entries for serial console (REPL) and storage are intentionally evaluated
