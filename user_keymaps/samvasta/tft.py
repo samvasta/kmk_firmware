@@ -2,22 +2,23 @@ import board
 import busio
 import displayio
 from kmk.scheduler import create_task
-from enum import Enum
 
 from kmk.extensions.display import Display
 
 from kmk.extensions.display.ili9341 import ILI9341
-from user_keymaps.samvasta.weather import AirQuality, Weather
+from api import AuthTokenProvider
+from spotify import SpotifyProvider
+from weather import AirQuality, Weather
 
 from adafruit_display_text import label
 
 displayio.release_displays()
 
-spi = busio.SPI(clock=board.GP2, MOSI=board.GP3, MISO=board.GP0)
+spi = busio.SPI(clock=board.IO6, MOSI=board.IO4, MISO=board.IO8)
 
-tft_cs = board.GP1
-tft_dc = board.GP8
-tft_reset = board.GP7
+tft_cs = board.IO2
+tft_dc = board.IO1
+tft_reset = board.IO16
 
 # Replace command, chip_select, and reset according to your hardware configuration.
 driver = ILI9341(
@@ -29,79 +30,97 @@ driver = ILI9341(
 )
 
 
-class Icon(Enum):
-    CHEVRON_DOWN = '0'
-    CHEVRON_LEFT = '1'
-    CHEVRON_RIGHT = '2'
-    CHEVRON_UP = '3'
-    ARROW_DOWN = '4'
-    ARROW_LEFT = '5'
-    ARROW_RIGHT = '6'
-    ARROW_UP = '7'
-    CHECK = '8'
-    CLOSE = '9'
-
-    WIFI = 'A'
-    WIFI_OFF = 'B'
-    HOME = 'C'
-    CALCULATOR = 'D'
-    DICTIONARY = 'E'
-    CLOCK = 'F'
-    CHART = 'G'
-    KEYBOARD = 'H'
-    LAYERS = 'I'
-    SHIFT_LOCK = 'J'
-    SHIFT_LOCK_OFF = 'K'
-    APPLE_ON = 'L'
-    APPLE_OFF = 'M'
-    RECORD = 'N'
-
-    SPOTIFY = 'Q'
-    SONG_NAME = 'R'
-    SONG_ARTIST = 'S'
-    SONG_ALBUM = 'T'
-
-    COMMAND = 'W'
-    SHIFT = 'X'
-    ALT_OPTION = 'Y'
-    CONTROL = 'Z'
-
-    SUN = 'a'
-    PART_CLOUDY = 'b'
-    MOON = 'c'
-    MOON_PART_CLOUDY = 'd'
-    CLOUD = 'e'
-    RAIN = 'f'
-    THUNDERSTORM = 'g'
-    FOG = 'h'
-    SNOW = 'i'
-    HAIL = 'j'
-    MIX_STORM = 'k'
-    SNOWFLAKE = 'l'
-    TEMP_0 = 'm'
-    TEMP_1 = 'n'
-    TEMP_2 = 'o'
-    TEMP_3 = 'p'
-    TEMP_4 = 'q'
-    WIND = 'r'
-    AIR_QUALITY = 's'
-    AIR = 't'
-    HUMIDITY_PERCENT = 'u'
+IconFont = {
+    "CHEVRON_DOWN": '0',
+    "CHEVRON_LEFT": '1',
+    "CHEVRON_RIGHT": '2',
+    "CHEVRON_UP": '3',
+    "CHECK": '4',
+    "CLOSE": '5',
+    "TOGGLE_OFF": '6',
+    "TOGGLE_ON": '7',
+    "WARNING": '8',
+    "WIFI": 'A',
+    "WIFI_OFF": 'B',
+    "HOME": 'C',
+    "CALCULATOR": 'D',
+    "DICTIONARY": 'E',
+    "CLOCK": 'F',
+    "CHART": 'G',
+    "KEYBOARD": 'H',
+    "LAYERS": 'I',
+    "SHIFT": 'J',
+    "SHIFT_LOCK": 'K',
+    "APPLE": 'L',
+    "TUX": 'M',
+    "CIRCLE": 'N',
+    "CIRCLE_CHECK": 'O',
+    "SPOTIFY": 'Q',
+    "SONG_NAME": 'R',
+    "SONG_ARTIST": 'S',
+    "SONG_ALBUM": 'T',
+    "LIGHTBULB": 'U',
+    "COMMAND": 'W',
+    "ALT_OPTION": 'X',
+    "CONTROL": 'Y',
+    "AQ": 'Z',
+    "SUN": 'a',
+    "PART_CLOUDY": 'b',
+    "MOON": 'c',
+    "MOON_PART_CLOUDY": 'd',
+    "CLOUD": 'e',
+    "DRIZZLE": 'f',
+    "RAIN": 'g',
+    "RAIN_HEAVY": 'h',
+    "FOGGY": 'i',
+    "HAIL": 'j',
+    "SNOW": 'k',
+    "LIGHTNING": 'l',
+    "SUN_SHOWER": 'm',
+    "SNOWFLAKE": 'n',
+    "TORNADO": 'o',
+    "TEMP_0": 'p',
+    "TEMP_1": 'q',
+    "TEMP_2": 'r',
+    "TEMP_3": 's',
+    "TEMP_4": 't',
+    "DROP": 'u',
+    "DROP_PERCENT": 'v',
+    "WIND": 'w',
+    "WAVES": 'x',
+    "SUNRISE": 'y',
+    "SUNSET": 'z',
+}
 
 
 class AnimatedDisplay(Display):
     update_count = 0
     frame_count = 0
 
-    def __init__(
-        self, display=None, sleep_command=None, wake_command=None, refresh_rate=5
-    ):
+    def __init__(self, display=None, refresh_rate=5):
         super().__init__(
-            display=display, sleep_command=sleep_command, wake_command=wake_command
+            display=display,
+            # Optional:
+            width=320,  # screen size
+            height=240,  # screen size
+            flip=False,  # flips your display content
+            flip_left=False,  # flips your display content on left side split
+            flip_right=False,  # flips your display content on right side split
+            brightness=0.8,  # initial screen brightness level
+            brightness_step=0.1,  # used for brightness increase/decrease keycodes
+            dim_time=20,  # time in seconds to reduce screen brightness
+            dim_target=0.1,  # set level for brightness decrease
+            off_time=60,  # time in seconds to turn off screen
+            powersave_dim_time=10,  # time in seconds to reduce screen brightness
+            powersave_dim_target=0.1,  # set level for brightness decrease
+            powersave_off_time=30,  # time in seconds to turn off screen
         )
         self.refresh_rate = refresh_rate
-        self.weather = Weather()
-        self.air_quality = AirQuality()
+
+        token_provider = AuthTokenProvider()
+        self.weather = Weather(token_provider)
+        self.air_quality = AirQuality(token_provider)
+        self.spotify = SpotifyProvider(token_provider)
 
     def during_bootup(self, width, height, rotation):
         super().during_bootup(width, height, rotation)
@@ -110,6 +129,7 @@ class AnimatedDisplay(Display):
         self._task = create_task(self.animate, period_ms=(1000 // self.refresh_rate))
         self.weather.create_task()
         self.air_quality.create_task()
+        self.spotify.create_task()
 
     def before_matrix_scan(self, sandbox):
         '''override default rendering hook so it doesn't call super().render()'''
@@ -171,23 +191,3 @@ class AnimatedDisplay(Display):
         #                 y=entry.y,
         #             )
         #         )
-
-
-tft_display = AnimatedDisplay(
-    # Mandatory:
-    display=driver,
-    # Optional:
-    width=320,  # screen size
-    height=240,  # screen size
-    flip=False,  # flips your display content
-    flip_left=False,  # flips your display content on left side split
-    flip_right=False,  # flips your display content on right side split
-    brightness=0.8,  # initial screen brightness level
-    brightness_step=0.1,  # used for brightness increase/decrease keycodes
-    dim_time=20,  # time in seconds to reduce screen brightness
-    dim_target=0.1,  # set level for brightness decrease
-    off_time=60,  # time in seconds to turn off screen
-    powersave_dim_time=10,  # time in seconds to reduce screen brightness
-    powersave_dim_target=0.1,  # set level for brightness decrease
-    powersave_off_time=30,  # time in seconds to turn off screen
-)

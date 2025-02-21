@@ -1,11 +1,12 @@
 import os
 
-from user_keymaps.samvasta.api import Api
+from api import Api, AuthTokenProvider
 
 
 class AirQuality(Api):
-    def __init__(self):
+    def __init__(self, token_provider: AuthTokenProvider):
         super().__init__(
+            token_provider,
             f"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={os.getenv("LATITUDE")}&longitude={os.getenv("LONGITUDE")}&current=us_aqi,dust,uv_index&format=json&timeformat=unixtime",
             3600,  # api refreshes every hour
         )
@@ -73,8 +74,9 @@ class Weather(Api):
         99: "Thunderstorm with Heavy Hail",
     }
 
-    def __init__(self):
+    def __init__(self, token_provider: AuthTokenProvider):
         super().__init__(
+            token_provider,
             f"https://api.open-meteo.com/v1/forecast?latitude={os.getenv("LATITUDE")}&longitude={os.getenv("LONGITUDE")}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_direction_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&format=json&timeformat=unixtime",
             120,
         )

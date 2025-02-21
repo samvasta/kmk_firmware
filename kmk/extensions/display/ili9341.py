@@ -1,6 +1,6 @@
 import busio
 
-import adafruit_displayio_ili9341  # Display-specific library
+import adafruit_ili9341  # Display-specific library
 import displayio
 
 from . import DisplayBase
@@ -30,7 +30,7 @@ class ILI9341(DisplayBase):
             self.spi = busio.SPI(sck, mosi)
 
     def during_bootup(self, width, height, rotation):
-        self.display = adafruit_displayio_ili9341.ILI9341(
+        self.display = adafruit_ili9341.ILI9341(
             displayio.FourWire(
                 self.spi,
                 command=self.command,
