@@ -36,7 +36,7 @@ class Mode(Module):
 
         make_argumented_key(
             names=('MODE_SET',),
-            constructor=ModeKey,
+            constructor=SetModeKey,
             on_press=self.sm_pressed,
             on_release=self.sm_released,
         )

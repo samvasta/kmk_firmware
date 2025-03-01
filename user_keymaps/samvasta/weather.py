@@ -10,9 +10,12 @@ class AirQuality(Api):
             f"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={os.getenv("LATITUDE")}&longitude={os.getenv("LONGITUDE")}&current=us_aqi,dust,uv_index&format=json&timeformat=unixtime",
             3600,  # api refreshes every hour
         )
+        self.data = {}
 
     def get_metric(self, metric):
-        return f"{self.data['current'][metric]}{self.data['current_units'][metric]}"
+        if self.data is not None and 'current' in self.data:
+            return f"{self.data['current'].get(metric, "???")}{self.data.get("current_units", {}).get(metric, "")}"
+        return "Loading..."
 
     def aqi(self):
         return self.get_metric("us_aqi")
@@ -44,6 +47,7 @@ class Weather(Api):
     ]
 
     weather_codes = {
+        -1: "Unknown",
         0: "Clear",
         1: "Mainly Clear",
         2: "Partly Cloudy",
@@ -80,15 +84,18 @@ class Weather(Api):
             f"https://api.open-meteo.com/v1/forecast?latitude={os.getenv("LATITUDE")}&longitude={os.getenv("LONGITUDE")}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_direction_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&format=json&timeformat=unixtime",
             120,
         )
+        self.data = {}
 
     def get_metric(self, metric):
-        return f"{self.data['current'][metric]}{self.data['current_units'][metric]}"
+        if self.data is not None and 'current' in self.data:
+            return f"{self.data['current'].get(metric, "???")}{self.data.get("current_units", {}).get(metric, "")}"
+        return "Loading..."
 
     def describe_weather(self):
-        return self.weather_codes[self.data["current"]["weather_code"]]
+        return self.weather_codes[self.weather_code()]
 
     def weather_code(self):
-        return self.data["current"]["weather_code"]
+        return self.data.get("current", {}).get("weather_code", -1)
 
     def temperature(self):
         return self.get_metric("temperature_2m")
@@ -100,7 +107,7 @@ class Weather(Api):
         return self.get_metric("apparent_temperature")
 
     def day_or_night(self):
-        return "Night" if self.data["current"]["is_day"] == 0 else "Day"
+        return "Night" if self.data.get("current", {}).get("is_day", 0) == 0 else "Day"
 
     def precipitation(self):
         return self.get_metric("precipitation")

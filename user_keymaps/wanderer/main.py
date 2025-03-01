@@ -6,27 +6,18 @@ from kmk.modules.layers import Layers
 from kmk.utils import Debug
 
 from kmk.modules.mode import Mode
-from tft import AnimatedDisplay
 
-# from tft import tft_display
 DEBUG_ENABLE = True
 
 debug = Debug(__name__)
 
 keyboard = Input()
-# fmt:off
-combo_layers = {
-    (1, 2): 5, # Media Layer
-    (3, 4): 6  # System Layer
-}
-# fmt:on
-keyboard.modules.append(Layers(combo_layers))
+keyboard.modules.append(Layers())
 MODE_WIN_LIN = 0
 MODE_MAC = 1
 keyboard.modules.append(Mode(MODE_WIN_LIN))
 
 keyboard.extensions.append(MediaKeys())
-keyboard.extensions.append(AnimatedDisplay())
 
 keyboard.debug_enabled = DEBUG_ENABLE
 
@@ -122,11 +113,21 @@ SCRNSHOT = KC.MODE_DO(
     KC.NO,
 )
 
+
 L1 = KC.MO(1)
 L2 = KC.MO(2)
 L3 = KC.MO(3)
 L4 = KC.MO(4)
+L5 = KC.MO(5)
+L6 = KC.MO(6)
 
+# fmt:off
+combo_layers = {
+    (1, 2): 5, # Media Layer
+    (3, 4): 6  # System Layer
+}
+# fmt:on
+keyboard.modules.append(Layers(combo_layers))
 
 # fmt:off
 keyboard.keymap = [
@@ -138,9 +139,10 @@ keyboard.keymap = [
 #    ├────────┼────────┼─────────┼────────┼────────┼────────┤             ├────────┼────────┼────────┼────────┼────────┼────────┤
 #    │Ctrl/Cmd│    V   │   K     │   W    │   G    │   Q    │             │    X   │   P    │   ;    │   '    │   ,    │Ctrl/Cmd│
 #    └────────┴────────┴─────────┴────────┴────────┴────────┘             └────────┴────────┴────────┴────────┴────────┴────────┘
-       KC.ESC,   KC.Z,  KC.M,  KC.L,  KC.C,  KC.B,    KC.SPC,    KC.RSFT,  KC.F,   KC.H,  KC.O,    KC.U,    KC.J,    KC.BSPC,
-       KC.TAB,   KC.S,  KC.T,  KC.R,  KC.D,  KC.Y,    L1,        L2,       KC.DOT, KC.N,  KC.A,    KC.E,    KC.I,    KC.ENT,
-       CTRL_CMD, KC.V,  KC.K,  KC.W,  KC.G,  KC.Q,    L3,        L4,       KC.X,   KC.P,  KC.SCLN, KC.QUOT, KC.COMM, ALT_CTRL,
+       KC.ESC,   KC.Q,  KC.W,  KC.E,  KC.R,  KC.T,                         KC.Y,   KC.U,  KC.I,    KC.O,    KC.P,    KC.BSPC,
+       KC.TAB,   KC.A,  KC.S,  KC.D,  KC.F,  KC.G,                         KC.H, KC.J,  KC.K,    KC.L,    KC.SCLN,    KC.ENT,
+       CTRL_CMD, KC.Z,  KC.X,  KC.C,  KC.V,  KC.B,                         KC.N,   KC.M,  KC.COMM, KC.DOT, KC.QUES, ALT_CTRL,
+                          L5,  KC.SPC,  L1,    L3,                         L4,     L2,    KC.RSFT, L6
     ],
     [
 #    Navigation
@@ -151,9 +153,10 @@ keyboard.keymap = [
 #    ├────────┼─────────┼─────────┼─────────┼─────────┼─────────┤                         ├────────┼─────────┼─────────┼─────────┼─────────┼────────┤
 #    │        │         │   CUT   │  COPY   │  PASTE  │         │                         │        │         │         │         │         │        │
 #    └────────┴─────────┴─────────┴─────────┴─────────┴─────────┘                         └────────┴─────────┴─────────┴─────────┴─────────┴────────┘
-       KC.NO,  S(KC.GRV),  KC.BSPC, KC.UP,   KC.DEL,   CTRL_ALT_K,    KC.SPC,    KC.RSFT,    KC.NO, KC.HOME, UNDO,    REDO,     SCRNSHOT, KC.NO,
-       KC.NO,  S(KC.TAB),  KC.LEFT, KC.DOWN, KC.RIGHT, CTRL_ALT_J,    L1,        L2,         KC.NO, KC.END,  ALT_CMD, CTRL_ALT, KC.LSFT,  KC.NO,
-       KC.NO,  KC.NO,      CUT,     COPY,    PASTE,    KC.NO,         L3,        L4,         KC.NO, KC.NO,   KC.NO,   KC.NO,    KC.NO,    KC.NO,
+       KC.NO,  S(KC.GRV),  KC.BSPC, KC.UP,   KC.DEL,   CTRL_ALT_K,         KC.NO, KC.HOME, UNDO,    REDO,     SCRNSHOT, KC.NO,
+       KC.NO,  S(KC.TAB),  KC.LEFT, KC.DOWN, KC.RIGHT, CTRL_ALT_J,         KC.NO, KC.END,  ALT_CMD, CTRL_ALT, KC.LSFT,  KC.NO,
+       KC.NO,  KC.NO,      CUT,     COPY,    PASTE,    KC.NO,              KC.NO, KC.NO,   KC.NO,   KC.NO,    KC.NO,    KC.NO,
+                          L5,  KC.SPC,  L1,    L3,                         L4,     L2,    KC.RSFT, L6
     ],
     [
 #    Symbols
@@ -164,9 +167,10 @@ keyboard.keymap = [
 #    ├────────┼────────┼─────────┼────────┼────────┼────────┤                           ├────────┼────────┼────────┼────────┼────────┼────────┤
 #    │        │    ~   │   #     │   <    │   >    │   @    │                           │    .   │   '    │   "    │    /   │   ,    │        │
 #    └────────┴────────┴─────────┴────────┴────────┴────────┘                           └────────┴────────┴────────┴────────┴────────┴────────┘
-       KC.NO,  KC.CIRC,  KC.BSLS,   KC.ASTR,  KC.COLN, KC.AMPR,    KC.SPC,    KC.RSFT,    KC.GRV,  KC.DLR,  KC.LBRC, KC.RBRC, KC.PERC, KC.NO,
-       KC.NO,  KC.EXLM,  KC.MINUS,  KC.PLUS,  KC.EQL,  KC.PIPE,    L1,        L2,         KC.QUES, KC.LPRN, KC.LCBR, KC.RCBR, KC.RPRN, KC.NO,
-       KC.NO,  KC.TILD,  KC.POUND,  KC.LABK,  KC.RABK, KC.AT,      L3,        L4,         KC.DOT,  KC.QUOT, KC.DQT,  KC.SLSH, KC.COMM, KC.NO,
+       KC.NO,  KC.CIRC,  KC.BSLS,   KC.ASTR,  KC.COLN, KC.AMPR,            KC.GRV,  KC.DLR,  KC.LBRC, KC.RBRC, KC.PERC, KC.NO,
+       KC.NO,  KC.EXLM,  KC.MINUS,  KC.PLUS,  KC.EQL,  KC.PIPE,            KC.QUES, KC.LPRN, KC.LCBR, KC.RCBR, KC.RPRN, KC.NO,
+       KC.NO,  KC.TILD,  KC.POUND,  KC.LABK,  KC.RABK, KC.AT,              KC.DOT,  KC.QUOT, KC.DQT,  KC.SLSH, KC.COMM, KC.NO,
+                          L5,  KC.SPC,  L1,    L3,                         L4,     L2,    KC.RSFT, L6
     ],
     [
 #    Numbers
@@ -177,9 +181,10 @@ keyboard.keymap = [
 #    ├────────┼────────┼─────────┼────────┼────────┼────────┤                ├────────┼────────┼────────┼────────┼────────┤────────┤
 #    │        │    0   │    1    │   2    │    3   │   -    │                │   0    │   1    │   2    │   3    │   -    │        │
 #    └────────┴────────┴─────────┴────────┴────────┴────────┘                └────────┴────────┴────────┴────────┴────────┴────────┘
-       KC.NO,  KC.DLR, KC.N7,  KC.N8,  KC.N9,  KC.PLUS,   KC.SPC,    KC.RSFT,    KC.DLR, KC.N7,  KC.N8, KC.N9,  KC.PLUS,  KC.NO,
-       KC.NO,  KC.DOT, KC.N4,  KC.N5,  KC.N6,  KC.EQL,    L1,        L2,         KC.DOT, KC.N4,  KC.N5, KC.N6,  KC.EQL,   KC.NO,
-       KC.NO,  KC.N0,  KC.N1,  KC.N2,  KC.N3,  KC.MINUS,  L3,        L4,         KC.N0,  KC.N1,  KC.N2, KC.N3,  KC.MINUS, KC.NO,
+       KC.NO,  KC.DLR, KC.N7,  KC.N8,  KC.N9,  KC.PLUS,                    KC.DLR, KC.N7,  KC.N8, KC.N9,  KC.PLUS,  KC.NO,
+       KC.NO,  KC.DOT, KC.N4,  KC.N5,  KC.N6,  KC.EQL,                     KC.DOT, KC.N4,  KC.N5, KC.N6,  KC.EQL,   KC.NO,
+       KC.NO,  KC.N0,  KC.N1,  KC.N2,  KC.N3,  KC.MINUS,                   KC.N0,  KC.N1,  KC.N2, KC.N3,  KC.MINUS, KC.NO,
+                          L5,  KC.SPC,  L1,    L3,                         L4,     L2,    KC.RSFT, L6
     ],
     [
 #    Function Keys
@@ -190,9 +195,10 @@ keyboard.keymap = [
 #    ├────────┼────────┼────────┼────────┼────────┼────────┤                 ├────────┼────────┼────────┼────────┼────────┼────────┤
 #    │        │   F9   │   F10  │   F11  │   F12  │ XXXXXX │                 │ XXXXXX │   F9   │   F10  │   F11  │   F12  │        │
 #    └────────┴────────┴────────┴────────┴────────┴────────┘                 └────────┴────────┴────────┴────────┴────────┴────────┘
-       KC.NO,  KC.F1,  KC.F2,  KC.F3,  KC.F4,  KC.NO,    KC.SPC,    KC.RSFT,    KC.NO, KC.F1,  KC.F2,  KC.F3,  KC.F4,  KC.NO,
-       KC.NO,  KC.F5,  KC.F6,  KC.F7,  KC.F8,  KC.NO,    L1,        L2,         KC.NO, KC.F5,  KC.F6,  KC.F7,  KC.F8,  KC.NO,
-       KC.NO,  KC.F9,  KC.F10, KC.F11, KC.F12, KC.NO,    L3,        L4,         KC.NO, KC.F9,  KC.F10, KC.F11, KC.F12, KC.NO,
+       KC.NO,  KC.F1,  KC.F2,  KC.F3,  KC.F4,  KC.NO,                      KC.NO, KC.F1,  KC.F2,  KC.F3,  KC.F4,  KC.NO,
+       KC.NO,  KC.F5,  KC.F6,  KC.F7,  KC.F8,  KC.NO,                      KC.NO, KC.F5,  KC.F6,  KC.F7,  KC.F8,  KC.NO,
+       KC.NO,  KC.F9,  KC.F10, KC.F11, KC.F12, KC.NO,                      KC.NO, KC.F9,  KC.F10, KC.F11, KC.F12, KC.NO,
+                          L5,  KC.SPC,  L1,    L3,                         L4,     L2,    KC.RSFT, L6
     ],
     [
 #    Media
@@ -203,9 +209,10 @@ keyboard.keymap = [
 #    ├────────┼────────┼─────────┼────────┼────────┼────────┤                     ├────────┼────────┼────────┼────────┼────────┼────────┤
 #    │ XXXXXX │ XXXXXX │ XXXXXXX │ XXXXXX │   <<   │   >>   │                     │   <<   │   >>   │ XXXXXX │ XXXXXX │ XXXXXX │ XXXXXX │
 #    └────────┴────────┴─────────┴────────┴────────┴────────┘                     └────────┴────────┴────────┴────────┴────────┴────────┘
-       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.VOLD, KC.VOLU,      KC.SPC,    KC.RSFT,    KC.VOLD, KC.VOLU,  KC.NO, KC.NO,  KC.NO,  KC.NO,
-       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.MUTE, KC.MPLY,      L1,        L2,         KC.MUTE, KC.MPLY,  KC.NO, KC.NO,  KC.NO,  KC.NO,
-       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.MPRV, KC.MNXT,      L3,        L4,         KC.MPRV, KC.MNXT,  KC.NO, KC.NO,  KC.NO,  KC.NO,
+       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.VOLD, KC.VOLU,                    KC.VOLD, KC.VOLU,  KC.NO, KC.NO,  KC.NO,  KC.NO,
+       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.MUTE, KC.MPLY,                    KC.MUTE, KC.MPLY,  KC.NO, KC.NO,  KC.NO,  KC.NO,
+       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.MPRV, KC.MNXT,                    KC.MPRV, KC.MNXT,  KC.NO, KC.NO,  KC.NO,  KC.NO,
+                          L5,  KC.SPC,  L1,    L3,                         L4,     L2,    KC.RSFT, L6
     ],
     [
 #    System
@@ -216,9 +223,10 @@ keyboard.keymap = [
 #    ├────────┼────────┼─────────┼────────┼────────┼────────┤                     ├────────┼────────┼────────┼────────┼────────┼────────┤
 #    │        │        │       X │        │        │        │                     │        │        │        │        │        │        │
 #    └────────┴────────┴─────────┴────────┴────────┴────────┘                     └────────┴────────┴────────┴────────┴────────┴────────┘
-       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.NO, KC.NO,                          KC.SPC,    KC.RSFT,    KC.NO, KC.NO,  KC.NO, KC.NO,  KC.NO,  KC.NO,
-       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.MODE_SET(MODE_WIN_LIN), KC.NO,      L1,        L2,         KC.NO, KC.MODE_SET(MODE_MAC),  KC.NO, KC.NO,  KC.NO,  KC.NO,
-       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.NO, KC.NO,                          L3,        L4,         KC.NO, KC.NO,  KC.NO, KC.NO,  KC.NO,  KC.NO,
+       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.NO, KC.NO,                        KC.NO, KC.NO,  KC.NO, KC.NO,  KC.NO,  KC.NO,
+       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.NO, KC.NO,                        KC.NO, KC.NO,  KC.NO, KC.NO,  KC.NO,  KC.NO,
+       KC.NO,  KC.NO,  KC.NO,  KC.NO, KC.NO, KC.NO,                        KC.NO, KC.NO,  KC.NO, KC.NO,  KC.NO,  KC.NO,
+                          L5,  KC.SPC,  L1,    L3,                         L4,     L2,    KC.RSFT, L6
     ],
 ]
 # fmt:on
