@@ -261,7 +261,6 @@ class AnimatedDisplay(Extension):
             self.driver.wake()
 
     def animate(self):
-        debug("Animating...")
         self.frame_count = self.frame_count + 1
 
         self.splash = displayio.Group()
@@ -275,7 +274,7 @@ class AnimatedDisplay(Extension):
                 text=f"frame: {self.frame_count}",
                 color=0x000000,
                 background_color=0xFFFFFF,
-                y=15
+                y=15,
             )
         )
 
@@ -286,7 +285,7 @@ class AnimatedDisplay(Extension):
                 color=0x333333,
                 background_color=0xFFFFFF,
                 y=50,
-                x=32
+                x=32,
             )
         )
 
@@ -297,7 +296,7 @@ class AnimatedDisplay(Extension):
                 color=0xBB9911,
                 background_color=0xFFFFFF,
                 y=50,
-                x=8
+                x=8,
             )
         )
 
@@ -308,7 +307,7 @@ class AnimatedDisplay(Extension):
                 color=0x2244BB,
                 background_color=0xFFFFFF,
                 y=135,
-                x=8
+                x=8,
             )
         )
 
@@ -319,11 +318,9 @@ class AnimatedDisplay(Extension):
                 color=0x333333,
                 background_color=0xFFFFFF,
                 y=135,
-                x=32
+                x=32,
             )
         )
-
-
 
         self.splash.append(
             label.Label(
@@ -332,7 +329,7 @@ class AnimatedDisplay(Extension):
                 color=0xBB2244,
                 background_color=0xFFFFFF,
                 y=100,
-                x=8
+                x=8,
             )
         )
 
@@ -343,35 +340,8 @@ class AnimatedDisplay(Extension):
                 color=0x333333,
                 background_color=0xFFFFFF,
                 y=100,
-                x=32
+                x=32,
             )
         )
 
         self.driver.display.root_group = self.splash
-        debug("done")
-        # for entry in self.entries:
-        #     if entry.layer != layer and entry.layer is not None:
-        #         continue
-        #     if isinstance(entry, TextEntry):
-        #         splash.append(
-        #             label.Label(
-        #                 terminalio.FONT,
-        #                 text=entry.text,
-        #                 color=entry.color,
-        #                 background_color=entry.background_color,
-        #                 anchor_point=entry.anchor_point,
-        #                 anchored_position=entry.anchored_position,
-        #                 label_direction=entry.direction,
-        #                 line_spacing=entry.line_spacing,
-        #                 padding_left=1,
-        #             )
-        #         )
-        #     elif isinstance(entry, ImageEntry):
-        #         splash.append(
-        #             displayio.TileGrid(
-        #                 entry.image,
-        #                 pixel_shader=entry.image.pixel_shader,
-        #                 x=entry.x,
-        #                 y=entry.y,
-        #             )
-        #         )

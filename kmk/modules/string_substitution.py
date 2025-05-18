@@ -38,22 +38,31 @@ class Character:
             )
         except AttributeError:
             return False
+        
+    def __str__(self):
+        return self.key_code
+        
+    def __hash__(self):
+        return self.key_code.__hash__()
 
+def str_to_phrase(string:str) -> list[Character]:
+    characters: list[Character] = []
+    for char in string:
+        key_code = KC[char]
+        if key_code == KC.NO:
+            raise ValueError(f'Invalid character in dictionary: {char}')
+        shifted = char.isupper() or (
+            isinstance(key_code, ModifiedKey) and key_code.modifier == KC.LSHIFT
+        )
+        characters.append(Character(key_code, shifted))
+    return characters
 
 class Phrase:
     '''Manages a collection of characters and keeps an index of them so that potential matches can be tracked'''
 
     def __init__(self, string: str) -> None:
-        self._characters: list[Character] = []
+        self._characters: list[Character] = str_to_phrase(string)
         self._index: int = 0
-        for char in string:
-            key_code = KC[char]
-            if key_code == KC.NO:
-                raise ValueError(f'Invalid character in dictionary: {char}')
-            shifted = char.isupper() or (
-                isinstance(key_code, ModifiedKey) and key_code.modifier == KC.LSHIFT
-            )
-            self._characters.append(Character(key_code, shifted))
 
     def next_character(self) -> None:
         '''Increment the current index for this phrase'''

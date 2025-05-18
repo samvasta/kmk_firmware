@@ -3,6 +3,8 @@ from kmk.extensions.media_keys import MediaKeys
 from kmk.keys import KC
 from kb import Input
 from kmk.modules.layers import Layers
+from kmk.modules.magickey import MagicKey, str_to_keys
+from kmk.modules.string_substitution import str_to_phrase
 from kmk.utils import Debug
 
 from kmk.modules.mode import Mode
@@ -26,7 +28,9 @@ MODE_MAC = 1
 keyboard.modules.append(Mode(MODE_WIN_LIN))
 
 keyboard.extensions.append(MediaKeys())
-keyboard.extensions.append(AnimatedDisplay())
+keyboard.modules.append(MagicKey())
+# keyboard.extensions.append(AnimatedDisplay())
+
 
 keyboard.debug_enabled = DEBUG_ENABLE
 
@@ -128,19 +132,102 @@ L3 = KC.MO(3)
 L4 = KC.MO(4)
 
 
+MAGIC = KC.MAGIC(
+    {
+        # Single letters
+        "a": [KC.O],
+        "b": str_to_keys("efore"),
+        "c": str_to_keys("kly"),
+        "d": [KC.Y],
+        "e": [KC.U],
+        # "f" same finger as magic, no use
+        "g": [KC.Y],
+        # "h" same finger as magic, no use
+        "i": str_to_keys("on"),
+        "j": str_to_keys("ust"),
+        "k": [KC.S],
+        "l": [KC.Y],
+        "m": str_to_keys("ent"),
+        "n": str_to_keys("ion"),
+        "o": [KC.A],
+        "p": [KC.Y],
+        # "q" same finger as magic, no use
+        "r": [KC.L],
+        "s": [KC.K],
+        "t": str_to_keys("ment"),
+        "u": [KC.E],
+        "v": str_to_keys("er"),
+        "w": str_to_keys("hich"),
+        "x": str_to_keys("es"),
+        "y": str_to_keys("ou"),
+        # "z" same finger as magic, no use
+        # Word completions
+        "con": str_to_keys("figuration"),
+        "ob": str_to_keys("ject"),
+        "play": str_to_keys("book"),
+        "wor": str_to_keys("kflow"),
+        "wo": str_to_keys("uld"),
+        "be": str_to_keys("cause"),
+    },
+    KC.DOT,
+)
+
+REPEAT = KC.MAGIC(
+    {
+        "0": [KC.N0],
+        "1": [KC.N1],
+        "2": [KC.N2],
+        "3": [KC.N3],
+        "4": [KC.N4],
+        "5": [KC.N5],
+        "6": [KC.N6],
+        "7": [KC.N7],
+        "8": [KC.N8],
+        "9": [KC.N9],
+        "a": [KC.N, KC.D],  # and
+        "b": [KC.B],
+        "c": [KC.Y],  # y
+        "d": [KC.D],
+        "e": [KC.E],
+        "f": [KC.O],  # fo
+        "g": [KC.G],
+        "h": [KC.H],
+        "i": [KC.N, KC.G],  # ing
+        "j": [KC.J],
+        "k": [KC.K],
+        "l": [KC.L],
+        "m": [KC.M],
+        "n": [KC.N],
+        "o": [KC.F],  # of
+        "p": [KC.P],
+        "q": [KC.Q],
+        "r": [KC.R],
+        "s": [KC.S],
+        "t": [KC.T],
+        "u": [KC.U],
+        "v": [KC.V],
+        "w": [KC.W],
+        "x": [KC.X],
+        "y": [KC.Y],
+        "z": [KC.Z],
+    },
+    KC.NO,
+)
+
+
 # fmt:off
 keyboard.keymap = [
     [
-#    ┌────────┬────────┬─────────┬────────┬────────┬────────┐             ┌────────┬────────┬────────┬────────┬────────┬────────┐
-#    │  ESC   │    Z   │   M     │   L    │   C    │   B    │             │    F   │   H    │   O    │    U   │   J    │ BKSPC  │
-#    ├────────┼────────┼─────────┼────────┼────────┼────────┤             ├────────┼────────┼────────┼────────┼────────┼────────┤
-#    │  TAB   │    S   │   T     │   R    │   D    │   Y    │             │    .   │   N    │   A    │    E   │   I    │ ENTER  │
-#    ├────────┼────────┼─────────┼────────┼────────┼────────┤             ├────────┼────────┼────────┼────────┼────────┼────────┤
-#    │Ctrl/Cmd│    V   │   K     │   W    │   G    │   Q    │             │    X   │   P    │   ;    │   '    │   ,    │Ctrl/Cmd│
-#    └────────┴────────┴─────────┴────────┴────────┴────────┘             └────────┴────────┴────────┴────────┴────────┴────────┘
-       KC.ESC,   KC.Z,  KC.M,  KC.L,  KC.C,  KC.B,    KC.SPC,    KC.RSFT,  KC.F,   KC.H,  KC.O,    KC.U,    KC.J,    KC.BSPC,
-       KC.TAB,   KC.S,  KC.T,  KC.R,  KC.D,  KC.Y,    L1,        L2,       KC.DOT, KC.N,  KC.A,    KC.E,    KC.I,    KC.ENT,
-       CTRL_CMD, KC.V,  KC.K,  KC.W,  KC.G,  KC.Q,    L3,        L4,       KC.X,   KC.P,  KC.SCLN, KC.QUOT, KC.COMM, ALT_CTRL,
+#    ┌────────┬────────┬─────────┬────────┬────────┬────────┐                       ┌────────┬────────┬────────┬────────┬────────┬────────┐
+#    │  ESC   │    Z   │   M     │   L    │   C    │   B    │                       │    F   │   H    │   O    │    U   │   J    │ BKSPC  │
+#    ├────────┼────────┼─────────┼────────┼────────┼────────┤                       ├────────┼────────┼────────┼────────┼────────┼────────┤
+#    │  TAB   │    S   │   T     │   R    │   D    │   Y    │                       │   ⭐   │   N    │   A    │    E   │   I    │ ENTER  │
+#    ├────────┼────────┼─────────┼────────┼────────┼────────┤                       ├────────┼────────┼────────┼────────┼────────┼────────┤
+#    │Ctrl/Cmd│    V   │   K     │   W    │   G    │   Q    │                       │    X   │   P    │   ;    │    ,   │   .    │Ctrl/Cmd│
+#    └────────┴────────┴─────────┴────────┴────────┴────────┘                       └────────┴────────┴────────┴────────┴────────┴────────┘
+       KC.ESC,   KC.Z,    KC.M,     KC.L,    KC.C,    KC.B,    KC.SPC,    KC.RSFT,     KC.F,     KC.H,  KC.O,    KC.U,    KC.J,    KC.BSPC,
+       KC.TAB,   KC.S,    KC.T,     KC.R,    KC.D,    KC.Y,    L1,        L2,          MAGIC,    KC.N,  KC.A,    KC.E,    KC.I,    KC.ENT,
+       CTRL_CMD, KC.V,    KC.K,     KC.W,    KC.G,    KC.Q,    L3,        L4,          KC.X,     KC.P,  KC.SCLN, KC.COMM, KC.DOT,  ALT_CTRL,
     ],
     [
 #    Navigation

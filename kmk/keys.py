@@ -438,6 +438,9 @@ class _DefaultKey(Key):
         keyboard.hid_pending = True
         keyboard.keys_pressed.discard(self)
 
+    def __hash__(self):
+        return self.code
+
 
 class KeyboardKey(_DefaultKey):
     pass
